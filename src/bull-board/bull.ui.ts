@@ -3,11 +3,13 @@ import { ExpressAdapter } from '@bull-board/express';
 import { Queue } from 'bullmq';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { NestApplication } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 
 const BullBoardUI = (app: NestApplication): void => {
+  const configService = app.get(ConfigService);
   const redisOptions = {
-    port: 6379,
-    host: 'localhost',
+    port: configService.get('redis.port'),
+    host: configService.get('redis.host'),
   };
   const notiMailManager = new Queue('noti-mail', { connection: redisOptions });
   const notiOtpManager = new Queue('noti-otp', { connection: redisOptions });

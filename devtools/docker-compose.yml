@@ -3,7 +3,7 @@ name: dev-tools-ff-noti
 services:
   redis:
     image: redis:latest
-    container_name: redisCache
+    container_name: redis
     ports:
       - 6379:6379
     volumes:
@@ -12,33 +12,37 @@ services:
       - ff-noti-network101
     restart: unless-stopped
 
-  redis-insight:
-    image: redis/redisinsight:latest
-    container_name: redis-insight
-    restart: unless-stopped
-    ports:
-      - 5540:5540
-    volumes:
-      - redisinsight:/data
-    links:
-      - redis
-    networks:
-      - ff-noti-network101
+  # if you want to use redis-insight, uncomment the below code
+  #
+  # redis-insight:
+  #   image: redis/redisinsight:latest
+  #   container_name: redis-insight
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5540:5540
+  #   volumes:
+  #     - redisinsight:/data
+  #   links:
+  #     - redis
+  #   networks:
+  #     - ff-noti-network101
 
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    networks:
-      - ff-noti-network101
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: dev-ff-noti-db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: changeme
-    ports:
-      - 5432:5432
+  # if you want to use postgres, uncomment the below code
+  #
+  # postgres:
+  #   image: postgres:latest
+  #   container_name: postgres
+  #   volumes:
+  #     - postgres:/var/lib/postgresql/data
+  #   networks:
+  #     - ff-noti-network101
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: dev-ff-noti-db
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: changeme
+  #   ports:
+  #     - 5432:5432
 
 networks:
   ff-noti-network101:
@@ -47,8 +51,7 @@ networks:
 
 volumes:
   redis:
-    driver: local
-  redisinsight:
-    driver: local
-  postgres:
-    driver: local
+  # if you want to use redis-insight, uncomment the below code
+  # redisinsight:
+  # if you want to use postgres, uncomment the below code
+  # postgres:

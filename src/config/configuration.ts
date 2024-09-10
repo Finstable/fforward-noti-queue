@@ -1,6 +1,7 @@
 export interface IAppConfig {
   port: number;
   sendgrid: ISendgridConfig;
+  redis: IRedisConfig;
 }
 
 export interface IJwtConfig {
@@ -50,9 +51,18 @@ export interface ISendgridConfig {
   apiKey: string;
 }
 
+export interface IRedisConfig {
+  host: string;
+  port: number;
+}
+
 export default (): IAppConfig => ({
   port: parseInt(process.env.PORT, 10) || 3000,
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY,
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT, 10),
   },
 });

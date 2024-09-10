@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailDataRequired } from '@sendgrid/mail';
 import * as SendGrid from '@sendgrid/mail';
+import { CreateJobDto, IMailContentData } from 'src/module/queue/dto/queue.dot';
 
 @Injectable()
 export class EmailService {
@@ -15,31 +16,16 @@ export class EmailService {
     // SendGrid.setApiKey(process.env.SENDGRID_API_KEY);
   }
 
-  async sendEmailWithTemplate(recipient: string, value: any): Promise<void> {
-    const data = {
-      to: 'krittamet.dev@gmail.com',
-      from: 'noreply@fforward.finance',
-      content: {
-        expire: '1',
-        otp1: '1',
-        otp2: '2',
-        otp3: '3',
-        otp4: '4',
-        otp5: '5',
-        otp6: '6',
-        name: 'Krittamet',  
-        refCode: 'ASDFG',
-        senderEmail: 'email@example.com',
-      },
-      sendgridTemplateId: 'd-2e43b79c0b504d4a938d329daf5ca5cc', //se
+  async sendEmailWithTemplate(data: IMailContentData): Promise<void> {
+    //The data to be used in the template
+    const payload = {
+      to: data.to,
+      from: data.from,
+      dynamicTemplateData: data.content,
+      templateId: data.sendgridTemplateId, //se
     };
 
-    const mail: MailDataRequired = {
-      to: data.to,
-      from: data.from, //Approved sender ID in Sendgrid
-      templateId: data.sendgridTemplateId, //Retrieve from config service or environment variable
-      dynamicTemplateData: data.content, //The data to be used in the template
-    };
+    const mail: MailDataRequired = payload;
 
     await this.send(mail);
   }

@@ -2,6 +2,7 @@ import { Job } from 'bullmq';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { EmailService } from 'src/sheard/service/mail.service';
+import { CreateJobDto } from './dto/queue.dot';
 
 @Processor('noti-mail')
 export class NotiMaillProcessor extends WorkerHost {
@@ -12,11 +13,15 @@ export class NotiMaillProcessor extends WorkerHost {
 
   async process(job: Job) {
     this.logger.debug(`Start Job : ${job.id}`);
-    await this.emailService.sendEmailWithTemplate(
-      job.data.email,
-      job.data.value,
-    );
-    this.logger.debug(job.data);
+    const body: CreateJobDto = job.data;
+    try {
+      if (body.provider === 'sendgrid') {
+        await this.emailService.sendEmailWithTemplate(body.data);
+      }
+    } catch (error) {
+      this.logger.error('Error while sending email', error);
+      throw error;
+    }
     this.logger.debug('Transcoding completed');
   }
 }

@@ -6,6 +6,8 @@ import { MaillQueueEvents, OtpQueueEvents } from './queue.event';
 import { QueueServices } from './queue.service';
 import { EmailService } from 'src/sheard/service/mail.service';
 import { EmailModule } from '../email/email.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Queue as QueueEntity } from './entities/queue.entities';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { EmailModule } from '../email/email.module';
     BullModule.registerQueueAsync({
       name: 'noti-otp',
     }),
+    TypeOrmModule.forFeature([QueueEntity]),
     EmailModule,
   ],
   controllers: [QueueController],

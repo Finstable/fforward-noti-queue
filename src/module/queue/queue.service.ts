@@ -1,69 +1,89 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Job, Queue } from 'bullmq';
+import { Queue } from 'bullmq';
+import { Queue as QueueEntity } from './entities/queue.entities';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateJobDto } from './dto/queue.dot';
 
 @Injectable()
 export class QueueServices {
   constructor(
     @InjectQueue('noti-mail') private readonly notiMailQueue: Queue,
     @InjectQueue('noti-otp') private readonly notiOtpQueue: Queue,
+    @InjectRepository(QueueEntity)
+    private readonly queueRepository: Repository<QueueEntity>,
   ) {}
 
-  async addNotiMailJob(data: any) {
+  async addNotiMailJob(data: CreateJobDto) {
     try {
-      const res = await this.notiMailQueue.add('noti-mail', data,
-        {
-            attempts: 10,
-        }
-      );
-      return JSON.stringify({
-        status: 'success',
-        data: res,
+      const res = await this.notiMailQueue.add('noti-mail', data, {
+        attempts: 5,
+        backoff: {
+          type: 'fixed',
+          delay: 3000,
+        },
       });
+
+      const queue = await this.queueRepository.create({
+        queueType: 'noti-mail',
+        queueID: Number(res.id),
+        status: 'pending',
+        content: res.data,
+      });
+
+      await this.queueRepository.save(queue);
+
+      return {
+        status: 'success',
+        data: {
+          queueId: queue.id,
+        },
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  async addNotiOtpJob(data: any) {
+  async addNotiOtpJob(data: CreateJobDto) {
     try {
       const res = await this.notiOtpQueue.add('noti-otp', data);
-      return JSON.stringify({
-        status: 'success',
-        data: res,
+
+      const queue = await this.queueRepository.create({
+        queueType: 'noti-otp',
+        queueID: Number(res.id),
+        status: 'pending',
+        content: res.data,
       });
+
+      await this.queueRepository.save(queue);
+
+      return {
+        status: 'success',
+        data: {
+          queueId: queue.id,
+        },
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  async getNotiStatusByNotiId(type: string, jobId: string) {
+  async getNotiStatusByNotiId(jobId: string) {
     try {
-      if (!type || !jobId) {
+      if (!jobId) {
         throw new Error('Type and jobId are required');
       }
-
-      if (type === 'mail') {
-        const res = await this.notiMailQueue.getJob(jobId);
-        return JSON.stringify({
-          status: 'success',
-          data: {
-            id: res.id,
-            name: res.name,
-            data: res.data.data,
-          },
-        });
-      } else if (type === 'otp') {
-        const res = await this.notiOtpQueue.getJob(jobId);
-        return JSON.stringify({
-          status: 'success',
-          data: {
-            id: res.id,
-            name: res.name,
-            data: res.data.data,
-          },
-        });
-      }
+      const queue = await this.queueRepository.findOne({
+        where: { id: jobId },
+      });
+      return {
+        status: 'success',
+        data: {
+          queueId: queue.id,
+          status: queue.status,
+        },
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }

@@ -1,3 +1,5 @@
+name: dev-tools-ff-noti
+
 services:
   redis:
     image: redis:latest

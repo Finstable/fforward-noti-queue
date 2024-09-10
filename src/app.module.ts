@@ -1,23 +1,24 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { queueConfig } from './queue/queue.config';
-import { BullModule } from '@nestjs/bullmq';
+import { queueConfig } from './module/queue/queue.config';
+import { QueueModule } from './module/queue/queue.module';
+import { EmailModule } from './module/email/email.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
     queueConfig,
-    BullModule.registerQueueAsync({
-      name: 'noti-maill',
+    QueueModule,
+    EmailModule,
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true,
+      cache: true,
     }),
-    BullModule.registerQueueAsync({
-      name: 'noti-otp',
-    }),
-    BullModule.registerFlowProducer({
-      name: 'noti-flow',
-    })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {}

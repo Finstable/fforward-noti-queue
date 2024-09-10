@@ -1,0 +1,25 @@
+# docker compose file for development environment (nest.js)
+name: ff-noti-dev
+services:
+  nest-app:
+    container_name: nest-app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src:/app/src
+    command: npm run start:dev
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - PORT=${PORT:-3000} # Default to port 3000 if PORT is not set
+    ports:
+      - '${PORT}:${PORT}'
+    networks:
+      - ff-noti-network101
+
+networks:
+  ff-noti-network101:
+    external: true
+    name: ff-noti-network101

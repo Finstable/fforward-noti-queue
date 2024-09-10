@@ -1,0 +1,52 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redisCache
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+    networks:
+      - network101
+    restart: unless-stopped
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    restart: unless-stopped
+    ports:
+      - 5540:5540
+    volumes:
+      - redisinsight:/data
+    links:
+      - redis
+    networks:
+      - network101
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - network101
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dev-ff-noti-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+    ports:
+      - 5432:5432
+
+networks:
+  network101:
+    external: true
+    name: network101
+
+volumes:
+  redis:
+    driver: local
+  redisinsight:
+    driver: local
+  postgres:
+    driver: local

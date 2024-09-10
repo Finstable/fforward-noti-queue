@@ -7,7 +7,7 @@ services:
     volumes:
       - redis:/data
     networks:
-      - network101
+      - ff-noti-network101
     restart: unless-stopped
 
   redis-insight:
@@ -21,7 +21,7 @@ services:
     links:
       - redis
     networks:
-      - network101
+      - ff-noti-network101
 
   postgres:
     image: postgres:latest
@@ -29,7 +29,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
-      - network101
+      - ff-noti-network101
     restart: unless-stopped
     environment:
       POSTGRES_DB: dev-ff-noti-db
@@ -39,9 +39,9 @@ services:
       - 5432:5432
 
 networks:
-  network101:
+  ff-noti-network101:
     external: true
-    name: network101
+    name: ff-noti-network101
 
 volumes:
   redis:

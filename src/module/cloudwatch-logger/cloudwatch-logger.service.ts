@@ -15,16 +15,13 @@ export class CloudWatchLoggerService implements LoggerService {
     private configService: ConfigService
   ) {
     // Initialize AWS CloudWatch Logs
-    AWS.config.update({ region: this.configService.get<string>("aws.region") }); // Set your AWS region
+    AWS.config.update({ region: this.configService.get<string>('aws.region') }); // Set your AWS region
 
     this.cloudWatchLogs = new AWS.CloudWatchLogs();
 
     // Define your log group and log stream names
-    this.logGroupName =
-      this.configService.get<string>("aws.logGroupName") || "default-log-group";
-    this.logStreamName =
-      this.configService.get<string>("aws.logStreamName") ||
-      "default-log-stream";
+    this.logGroupName = this.configService.get<string>('aws.logGroupName');
+    this.logStreamName = this.configService.get<string>('aws.logStreamName');
 
     // Ensure the log group and stream exist
     this.ensureLogGroupAndStream();

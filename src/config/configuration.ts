@@ -2,6 +2,7 @@ export interface IAppConfig {
   port: number;
   sendgrid: ISendgridConfig;
   redis: IRedisConfig;
+  aws: IAwsConfig;
 }
 
 export interface IJwtConfig {
@@ -64,5 +65,10 @@ export default (): IAppConfig => ({
   redis: {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT, 10),
+  },
+  aws: {
+    region: process.env.AWS_LOG_REGION,
+    logGroupName: process.env.AWS_LOG_LOGGROUPNAME,
+    logStreamName: process.env.AWS_LOG_LOGSTREAMNAME,
   },
 });

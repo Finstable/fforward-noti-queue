@@ -1,4 +1,4 @@
-name: dev-tools-ff-noti
+name: redis
 
 services:
   redis:
@@ -8,8 +8,6 @@ services:
       - 6379:6379
     volumes:
       - redis:/data
-    networks:
-      - ff-noti-network101
     restart: unless-stopped
 
   # if you want to use redis-insight, uncomment the below code
@@ -43,11 +41,6 @@ services:
   #     POSTGRES_PASSWORD: changeme
   #   ports:
   #     - 5432:5432
-
-networks:
-  ff-noti-network101:
-    external: true
-    name: ff-noti-network101
 
 volumes:
   redis:

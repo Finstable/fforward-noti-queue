@@ -17,6 +17,9 @@ export const typeOrmConfig = {
   // synchronize should be false in production
   synchronize: process.env.DB_SYNC === 'true' ? true : false,
   logging: true,
+  ssl:{
+    rejectUnauthorized: process.env.DB_SSL === 'true' ? true : false
+  }
 };
 
 export default registerAs('typeorm', () => typeOrmConfig);

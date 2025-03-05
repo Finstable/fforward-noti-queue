@@ -5,22 +5,14 @@ services:
     container_name: ff-noti-queue
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
     volumes:
       - ./src:/app/src
-    command: npm run start:dev
+    command: npm run start:prod
     env_file:
       - .env
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=${PORT:-3000} # Default to port 3000 if PORT is not set
     ports:
       - '${PORT}:${PORT}'
-    networks:
-      - redis_default
-
-# for STG Dev we use local Redis in VM 
-networks:
-  redis_default:
-    external: true
-    name: redis_default

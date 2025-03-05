@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { queueConfig } from './config/queue.config';
@@ -8,6 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import typeorm from './config/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ErrorLoggingMiddleware } from './middleware/logger.middleware';
+import { CloudWatchLoggerModule } from './module/cloudwatch-logger/cloudwatch-logger.module';
 
 @Module({
   imports: [
@@ -25,8 +27,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     QueueModule,
     EmailModule,
+    CloudWatchLoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ErrorLoggingMiddleware).forRoutes('*'); // ใช้กับทุก route
+  }
+}

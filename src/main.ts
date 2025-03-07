@@ -11,6 +11,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   BullBoardUI(app as NestApplication);
 
+  // Enable CORS
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
   app.use(express.json());
   app.use(new ErrorLoggingMiddleware(app.get(CloudWatchLoggerService)).use);
   app.useGlobalFilters(new GlobalExceptionFilter());
